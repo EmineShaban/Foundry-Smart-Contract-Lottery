@@ -12,6 +12,7 @@ import {VRFV2PlusClient} from "lib/chainlink-brownie-contracts/contracts/src/v0.
 
 contract Raffle is VRFConsumerBaseV2Plus {
     error Raffle__SendMoreToEnterRaffle();
+    error Raffle__TransferFaild();
 
     uint16 private constant REQUEST_CONFIRMATIONS = 3;
     uint32 private constant NUM_WORDS = 1;
@@ -22,6 +23,7 @@ contract Raffle is VRFConsumerBaseV2Plus {
     uint32 private immutable i_callbackGasLimit;
     address payable[] private s_players;
     uint256 private s_lastTimeStamp;
+    address private s_recentWinner;
 
     event RaffleEntered(address indexed player);
 
@@ -70,7 +72,15 @@ VRFV2PlusClient.RandomWordsRequest memory request = VRFV2PlusClient.RandomWordsR
     function fulfillRandomWords(
         uint256 requestId,
         uint256[] calldata randomWords
-    ) internal override {}
+    ) internal override {
+        uint256 indexOfWinner = randomWords[0] % s_players.length;
+        address payable recentWinner = s_players[indexOfWinner];
+        s_recentWinner = recentWinner;
+        (bool success, ) = recentWinner.call{value: address(this).balance}("");
+        if(!success){
+            revert Raffle__TransferFaild();
+        }
+    }
 
     /**
      * Getter Functions
