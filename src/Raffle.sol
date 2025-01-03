@@ -1,6 +1,8 @@
 // SPDX-License-Identifier: SEE LICENSE IN LICENSE
 pragma solidity 0.8.19;
-import {VRFConsumerBaseV2Plus} from "lib/chainlink-brownie-contracts/contracts/src/v0.8/vrf/dev/VRFConsumerBaseV2Plus.sol";
+
+import {VRFConsumerBaseV2Plus} from
+    "lib/chainlink-brownie-contracts/contracts/src/v0.8/vrf/dev/VRFConsumerBaseV2Plus.sol";
 import {VRFV2PlusClient} from "lib/chainlink-brownie-contracts/contracts/src/v0.8/vrf/dev/libraries/VRFV2PlusClient.sol";
 
 /**
@@ -9,7 +11,6 @@ import {VRFV2PlusClient} from "lib/chainlink-brownie-contracts/contracts/src/v0.
  * @notice This contract is for creating a simple ruffle
  * @dev Implements ChainLink VRFv2.5
  */
-
 contract Raffle is VRFConsumerBaseV2Plus {
     error Raffle__SendMoreToEnterRaffle();
     error Raffle__TransferFaild();
@@ -33,6 +34,7 @@ contract Raffle is VRFConsumerBaseV2Plus {
     RaffleState private s_raffleState;
 
     event RaffleEntered(address indexed player);
+    event WinnerPicked(address indexed winner);
 
     constructor(
         uint256 entranceFee,
@@ -57,7 +59,7 @@ contract Raffle is VRFConsumerBaseV2Plus {
             revert Raffle__SendMoreToEnterRaffle();
         }
 
-        if(s_raffleState != RaffleState.OPEN){
+        if (s_raffleState != RaffleState.OPEN) {
             revert Raffle_RaffleNotOpen();
         }
 
@@ -81,18 +83,19 @@ contract Raffle is VRFConsumerBaseV2Plus {
             extraArgs: VRFV2PlusClient._argsToBytes(VRFV2PlusClient.ExtraArgsV1({nativePayment: true}))
         });
 
-            uint256 requestId = s_vrfCoordinator.requestRandomWords(request);
+        uint256 requestId = s_vrfCoordinator.requestRandomWords(request);
     }
 
-    function fulfillRandomWords(
-        uint256 requestId,
-        uint256[] calldata randomWords
-    ) internal override {
+    function fulfillRandomWords(uint256 requestId, uint256[] calldata randomWords) internal override {
         uint256 indexOfWinner = randomWords[0] % s_players.length;
         address payable recentWinner = s_players[indexOfWinner];
         s_recentWinner = recentWinner;
-        (bool success, ) = recentWinner.call{value: address(this).balance}("");
-        if(!success){
+        s_raffleState = RaffleState.OPEN;
+        s_players = new address payable[](0);
+        s_lastTimeStamp = block.timestamp;
+        emit WinnerPicked(recentWinner);
+        (bool success,) = recentWinner.call{value: address(this).balance}("");
+        if (!success) {
             revert Raffle__TransferFaild();
         }
     }
@@ -100,7 +103,6 @@ contract Raffle is VRFConsumerBaseV2Plus {
     /**
      * Getter Functions
      */
-
     function getEntranceFee() external view returns (uint256) {
         return i_entranceFee;
     }
