@@ -46,8 +46,8 @@ contract Raffle is VRFConsumerBaseV2Plus {
         uint256 interval,
         address vrfCoordinator,
         bytes32 gasLine,
-        uint256 subscriptionId,
-        uint32 callbackGasLimit
+        uint32 callbackGasLimit,
+        uint256 subscriptionId
     ) VRFConsumerBaseV2Plus(vrfCoordinator) {
         i_entranceFee = entranceFee;
         i_interval = interval;
@@ -86,11 +86,13 @@ contract Raffle is VRFConsumerBaseV2Plus {
 
     function performUpkeep(bytes calldata /* performData */) external {
         (bool upkeepNeeded, ) = checkUpkeep("");
-        if(!upkeepNeeded){
-
-             revert Raffle__UpkeepNotNeeded(address(this).balance, s_players.length, uint256(s_raffleState));
+        if (!upkeepNeeded) {
+            revert Raffle__UpkeepNotNeeded(
+                address(this).balance,
+                s_players.length,
+                uint256(s_raffleState)
+            );
         }
-     
 
         s_raffleState = RaffleState.CALCULATING;
 
