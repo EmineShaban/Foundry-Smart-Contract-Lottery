@@ -42,6 +42,9 @@ contract HelperConfig is Script, CodeConstant {
             revert HelperConfig__InvalidErrorId();
         }
     }
+    function getConfig() public returns(NetworkConfig memory) {
+        return getConfigByChainId(block.chainid);
+    }
 
     function getSepoliaEthConfig() public pure returns (NetworkConfig memory) {
         return
