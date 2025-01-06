@@ -21,6 +21,6 @@ contract DeployRaffle is Script {
             config.subscriptionId
         );
         vm.stopBroadcast();
-        return(raffle, helperConfig);
+        return (raffle, helperConfig);
     }
 }
