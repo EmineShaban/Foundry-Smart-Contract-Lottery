@@ -5,6 +5,7 @@ import {Test} from "forge-std/Test.sol";
 import {DeployRaffle} from "script/DeployRaffle.s.sol";
 import {Raffle} from "src/Raffle.sol";
 import {HelperConfig} from "script/HelperConfig.s.sol";
+import {LinkToken} from "test/mocks/LinkToken.sol";
 
 contract RaffleTest is Test {
     Raffle public raffle;
@@ -16,6 +17,7 @@ contract RaffleTest is Test {
     bytes32 gasLine;
     uint32 callbackGasLimit;
     uint256 subscriptionId;
+    LinkToken link;
 
     address public PLAYER = makeAddr("player");
     uint256 public constant STARTING_PLAYER_BALANCE = 10 ether;
@@ -33,6 +35,7 @@ contract RaffleTest is Test {
         gasLine = config.gasLine;
         callbackGasLimit = config.callbackGasLimit;
         subscriptionId = config.subscriptionId;
+        link = LinkToken(config.link);
         vm.deal(PLAYER, STARTING_PLAYER_BALANCE);
     }
 
