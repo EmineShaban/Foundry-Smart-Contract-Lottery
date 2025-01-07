@@ -5,7 +5,10 @@ import {Script, console} from "forge-std/Script.sol";
 import {HelperConfig, CodeConstant} from "script/HelperConfig.s.sol";
 import {VRFCoordinatorV2_5Mock} from "lib/chainlink-brownie-contracts/contracts/src/v0.8/vrf/mocks/VRFCoordinatorV2_5Mock.sol";
 import {LinkToken} from "test/mocks/LinkToken.sol";
+import {DevOpsTools} from "foundry-devops/src/DevOpsTools.sol";
 
+
+// C:\Users\offic\Documents\GitHub\Foundry-Smart-Contract-Lottery\lib\foundry-devops\src\DevOpsTools.sol
 contract CreateSubscription is Script {
     function createSubscriptionUsingConfig() public returns (uint256, address) {
         HelperConfig helperConfig = new HelperConfig();
@@ -52,7 +55,7 @@ contract FundSubscription is Script, CodeConstant {
     ) public {
         console.log("Funding subscription: ", subscriptionId);
         console.log("Using vrfCoordinator: ", vrfCoordinator);
-    console.log("On chainId: ", block.chainid);
+        console.log("On chainId: ", block.chainid);
 
         if (block.chainid == LOCAL_CHAIN_ID) {
             vm.startBroadcast();
@@ -78,5 +81,36 @@ contract FundSubscription is Script, CodeConstant {
 
     function run() public {
         fundSubscriptionUsingConfig();
+    }
+}
+
+contract AddConsumer is Script {
+    function addConsumerUsingConfig(address mostRecentlyDeployed) public {
+        HelperConfig helperConfig = new HelperConfig();
+        address vrfCoordinator = helperConfig.getConfig().vrfCoordinator;
+        uint256 subId = helperConfig.getConfig().subscriptionId;
+        addConsumer(mostRecentlyDeployed, vrfCoordinator, subId);
+    }
+    function addConsumer(
+        address contractToAddToVrf,
+        address vrfCoordinator,
+        uint256 subId
+    ) public {
+        console.log("Adding consumer cotract: ", contractToAddToVrf);
+        console.log("To vrfCoordinator: ", vrfCoordinator);
+        console.log("On chainId: ", block.chainid);
+        vm.startBroadcast();
+        VRFCoordinatorV2_5Mock(vrfCoordinator).addConsumer(
+            subId,
+            contractToAddToVrf
+        );
+        vm.stopBroadcast();
+    }
+    function run() public {
+        address mostRecentlyDeployed = DevOpsTools.get_most_recent_deployment(
+            "Raffle",
+            block.chainid
+        );
+        addConsumerUsingConfig(mostRecentlyDeployed);
     }
 }
