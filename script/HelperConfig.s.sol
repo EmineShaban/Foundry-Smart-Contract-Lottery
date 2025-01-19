@@ -97,6 +97,8 @@ contract HelperConfig is Script, CodeConstant {
             subscriptionId: 0,
             link: address(linkToken)
         });
+                vm.deal(localNetworkConfig.vrfCoordinatorV2_5, 100 ether);
+
         return localNetworkConfig;
     }
 }
