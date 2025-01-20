@@ -79,7 +79,7 @@ contract HelperConfig is Script, CodeConstant {
             subscriptionId: 0, // If left as 0, our scripts will create one!
             gasLine: 0x787d74caea10b2b357790d5b5247c2f63d1d91572a9846f780606e4d953677ae,
             interval: 30, // 30 seconds
-            entranceFee: 0.01 ether,
+            entranceFee: 0.00001 ether,
             callbackGasLimit: 500000, // 500,000 gas
             vrfCoordinator: 0x9DdfaCa8183c41ad55329BdeeD9F6A8d53168B1B,
             link: 0x779877A7B0D9E8603169DdbD7836e478b4624789,

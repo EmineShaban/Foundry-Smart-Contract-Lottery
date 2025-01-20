@@ -60,16 +60,19 @@ contract Raffle is VRFConsumerBaseV2Plus {
         s_raffleState = RaffleState.OPEN;
     }
 
-    function enterRaffle() external payable {
+ 
+        function enterRaffle() public payable {
+        // require(msg.value >= i_entranceFee, "Not enough value sent");
+        // require(s_raffleState == RaffleState.OPEN, "Raffle is not open");
         if (msg.value < i_entranceFee) {
             revert Raffle__SendMoreToEnterRaffle();
         }
-
         if (s_raffleState != RaffleState.OPEN) {
             revert Raffle__RaffleNotOpen();
         }
-
         s_players.push(payable(msg.sender));
+        // Emit an event when we update a dynamic array or mapping
+        // Named events with the function name reversed
         emit RaffleEntered(msg.sender);
     }
 
@@ -94,6 +97,7 @@ contract Raffle is VRFConsumerBaseV2Plus {
                 uint256(s_raffleState)
             );
         }
+    require(address(this).balance > 0, "Insufficient balance for upkeep");
 
         s_raffleState = RaffleState.CALCULATING;
 
@@ -113,18 +117,36 @@ contract Raffle is VRFConsumerBaseV2Plus {
         emit RequestRaffleWinner(requestId);
     }
 
-    function fulfillRandomWords(
-        uint256 requestId,
-        uint256[] calldata randomWords
-    ) internal override {
+    // function fulfillRandomWords(
+    //     uint256 requestId,
+    //     uint256[] calldata randomWords
+    // ) internal override {
+    //     uint256 indexOfWinner = randomWords[0] % s_players.length;
+    //     address payable recentWinner = s_players[indexOfWinner];
+    //     s_recentWinner = recentWinner;
+    //     s_raffleState = RaffleState.OPEN;
+    //     s_players = new address payable[](0);
+    //     s_lastTimeStamp = block.timestamp;
+    //       emit WinnerPicked(recentWinner);
+    //     (bool success,) = recentWinner.call{value: address(this).balance}("");
+    //     // require(success, "Transfer failed");
+    //     if (!success) {
+    //         revert Raffle__TransferFaild();
+    //     }
+    // }
+
+
+        function fulfillRandomWords(uint256, /* requestId */ uint256[] calldata randomWords) internal override {
+ 
         uint256 indexOfWinner = randomWords[0] % s_players.length;
         address payable recentWinner = s_players[indexOfWinner];
         s_recentWinner = recentWinner;
-        s_raffleState = RaffleState.OPEN;
         s_players = new address payable[](0);
+        s_raffleState = RaffleState.OPEN;
         s_lastTimeStamp = block.timestamp;
         emit WinnerPicked(recentWinner);
-        (bool success, ) = recentWinner.call{value: address(this).balance}("");
+        (bool success,) = recentWinner.call{value: address(this).balance}("");
+        // require(success, "Transfer failed");
         if (!success) {
             revert Raffle__TransferFaild();
         }
