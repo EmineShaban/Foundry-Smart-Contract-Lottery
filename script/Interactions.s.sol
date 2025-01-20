@@ -12,7 +12,7 @@ import {DevOpsTools} from "foundry-devops/src/DevOpsTools.sol";
 contract CreateSubscription is Script {
     function createSubscriptionUsingConfig() public returns (uint256, address) {
         HelperConfig helperConfig = new HelperConfig();
-        address vrfCoordinator = helperConfig.getConfigByChainId(block.chainid).vrfCoordinator;
+        address vrfCoordinator = helperConfig.getConfig().vrfCoordinator;
         (uint256 subId, ) = createSubscription(vrfCoordinator);
         return (subId, vrfCoordinator);
     }
@@ -45,19 +45,17 @@ contract FundSubscription is Script, CodeConstant {
         address vrfCoordinator = helperConfig.getConfig().vrfCoordinator;
         uint256 subscriptionId = helperConfig.getConfig().subscriptionId;
         address linkToken = helperConfig.getConfig().link;
-        address account = helperConfig.getConfig().account;
-
-        fundSubscription(vrfCoordinator, subscriptionId, linkToken, account);
+        fundSubscription(vrfCoordinator, subscriptionId, linkToken);
     }
 
-    // function fundSubscription(
-    //     address vrfCoordinator,
-    //     uint256 subscriptionId,
-    //     address linkToken
-    // ) public {
-    //     console.log("Funding subscription: ", subscriptionId);
-    //     console.log("Using vrfCoordinator: ", vrfCoordinator);
-    //     console.log("On chainId: ", block.chainid);
+    function fundSubscription(
+        address vrfCoordinator,
+        uint256 subscriptionId,
+        address linkToken
+    ) public {
+        console.log("Funding subscription: ", subscriptionId);
+        console.log("Using vrfCoordinator: ", vrfCoordinator);
+        console.log("On chainId: ", block.chainid);
 
         if (block.chainid == LOCAL_CHAIN_ID) {
             vm.startBroadcast();
@@ -76,11 +74,6 @@ contract FundSubscription is Script, CodeConstant {
             vm.stopBroadcast();
         }
     }
-
-}
-
-
-    
     function createSubscriptionUsingConfig()
         public
         returns (uint256, address)
