@@ -59,7 +59,6 @@ contract FundSubscription is Script, CodeConstant {
     //     console.log("Using vrfCoordinator: ", vrfCoordinator);
     //     console.log("On chainId: ", block.chainid);
 
-<<<<<<< HEAD
         if (block.chainid == LOCAL_CHAIN_ID) {
             vm.startBroadcast();
             VRFCoordinatorV2_5Mock(vrfCoordinator).fundSubscription(
@@ -76,42 +75,6 @@ contract FundSubscription is Script, CodeConstant {
             );
             vm.stopBroadcast();
         }
-=======
-    //     if (block.chainid == LOCAL_CHAIN_ID) {
-    //         vm.startBroadcast();
-    //         VRFCoordinatorV2_5Mock(vrfCoordinator).fundSubscription(
-    //             subscriptionId,
-    //             FUND_AMOUNT * 100
-    //         );
-    //         vm.stopBroadcast();
-    //     } else {
-    //         vm.startBroadcast();
-    //         LinkToken(linkToken).transferAndCall(
-    //             vrfCoordinator,
-    //             FUND_AMOUNT * 100,
-    //             abi.encode(subscriptionId)
-    //         );
-    //         vm.stopBroadcast();
-    //     }
-    // }
-function fundSubscription(address vrfCoordinator, uint256 subscriptionId, address linkToken, address account) public {
-    console.log("Funding subscription:\t", subscriptionId);
-    console.log("Using vrfCoordinator:\t\t\t", vrfCoordinator);
-    console.log("On chainId: ", block.chainid);
-
-    if(block.chainid == LOCAL_CHAIN_ID) {
-        vm.startBroadcast(account);
-        VRFCoordinatorV2_5Mock(vrfCoordinator).fundSubscription(subscriptionId, FUND_AMOUNT * 100);
-        vm.stopBroadcast();
-    } else {
-        console.log(LinkToken(linkToken).balanceOf(msg.sender));
-        console.log(msg.sender);
-        console.log(LinkToken(linkToken).balanceOf(address(this)));
-        console.log(address(this));
-        vm.startBroadcast(account);
-        LinkToken(linkToken).transferAndCall(vrfCoordinator, FUND_AMOUNT, abi.encode(subscriptionId));
-        vm.stopBroadcast();
->>>>>>> 759b0728e222ceb18a2d65f68a376f5fb7bef3c2
     }
 
 }

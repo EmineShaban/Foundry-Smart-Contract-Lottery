@@ -115,11 +115,7 @@ contract HelperConfig is Script, CodeConstant {
             link: address(linkToken),
             account: 0x1804c8AB1F12E6bbf3894d4083f33e07309d1f38 
         });
-<<<<<<< HEAD
                 vm.deal(localNetworkConfig.vrfCoordinatorV2_5, 100 ether);
-=======
-         vm.deal(localNetworkConfig.account, 100 ether);
->>>>>>> 759b0728e222ceb18a2d65f68a376f5fb7bef3c2
 
         return localNetworkConfig;
     }

@@ -88,17 +88,12 @@ contract Raffle is VRFConsumerBaseV2Plus {
         return (upkeepNeeded, "");
     }
 
-<<<<<<< HEAD
 
 
 
         function performUpkeep(bytes calldata /* performData */ ) external  {
         (bool upkeepNeeded,) = checkUpkeep("");
         // require(upkeepNeeded, "Upkeep not needed");
-=======
-    function performUpkeep(bytes calldata /* performData */) external {
-        (bool upkeepNeeded, ) = checkUpkeep("");
->>>>>>> 759b0728e222ceb18a2d65f68a376f5fb7bef3c2
         if (!upkeepNeeded) {
             revert Raffle__UpkeepNotNeeded(
                 address(this).balance,
@@ -110,21 +105,15 @@ contract Raffle is VRFConsumerBaseV2Plus {
 
         s_raffleState = RaffleState.CALCULATING;
 
-<<<<<<< HEAD
         // Will revert if subscription is not set and funded.
         uint256 requestId = s_vrfCoordinator.requestRandomWords(
             VRFV2PlusClient.RandomWordsRequest({
-=======
-        VRFV2PlusClient.RandomWordsRequest memory request = VRFV2PlusClient
-            .RandomWordsRequest({
->>>>>>> 759b0728e222ceb18a2d65f68a376f5fb7bef3c2
                 keyHash: i_keyHash,
                 subId: i_subscriptionId,
                 requestConfirmations: REQUEST_CONFIRMATIONS,
                 callbackGasLimit: i_callbackGasLimit,
                 numWords: NUM_WORDS,
                 extraArgs: VRFV2PlusClient._argsToBytes(
-<<<<<<< HEAD
                     // Set nativePayment to true to pay for VRF requests with Sepolia ETH instead of LINK
                     VRFV2PlusClient.ExtraArgsV1({nativePayment: false})
                 )
@@ -136,37 +125,6 @@ contract Raffle is VRFConsumerBaseV2Plus {
 
 
     function fulfillRandomWords(uint256 requestId, uint256[] calldata randomWords) internal override {
-=======
-                    VRFV2PlusClient.ExtraArgsV1({nativePayment: true})
-                )
-            });
-
-        uint256 requestId = s_vrfCoordinator.requestRandomWords(request);
-        emit RequestRaffleWinner(requestId);
-    }
-
-    // function fulfillRandomWords(
-    //     uint256 requestId,
-    //     uint256[] calldata randomWords
-    // ) internal override {
-    //     uint256 indexOfWinner = randomWords[0] % s_players.length;
-    //     address payable recentWinner = s_players[indexOfWinner];
-    //     s_recentWinner = recentWinner;
-    //     s_raffleState = RaffleState.OPEN;
-    //     s_players = new address payable[](0);
-    //     s_lastTimeStamp = block.timestamp;
-    //       emit WinnerPicked(recentWinner);
-    //     (bool success,) = recentWinner.call{value: address(this).balance}("");
-    //     // require(success, "Transfer failed");
-    //     if (!success) {
-    //         revert Raffle__TransferFaild();
-    //     }
-    // }
-
-
-        function fulfillRandomWords(uint256, /* requestId */ uint256[] calldata randomWords) internal override {
- 
->>>>>>> 759b0728e222ceb18a2d65f68a376f5fb7bef3c2
         uint256 indexOfWinner = randomWords[0] % s_players.length;
         address payable recentWinner = s_players[indexOfWinner];
         s_recentWinner = recentWinner;
@@ -195,11 +153,7 @@ contract Raffle is VRFConsumerBaseV2Plus {
     function getPlayer(uint256 indexOfPlayer) external view returns (address) {
         return s_players[indexOfPlayer];
     }
-<<<<<<< HEAD
      function getLastTimeStamp() external view returns (uint256) {
-=======
-    function getLastTimeStamp() external view returns (uint256) {
->>>>>>> 759b0728e222ceb18a2d65f68a376f5fb7bef3c2
         return s_lastTimeStamp;
     }
     function getRecentWinner() external view returns (address) {
