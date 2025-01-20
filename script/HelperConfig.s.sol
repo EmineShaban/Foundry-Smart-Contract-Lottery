@@ -8,9 +8,10 @@ import {LinkToken} from "test/mocks/LinkToken.sol";
 
 
 abstract contract CodeConstant {
+
     uint256 public constant ETH_SEPOLIA_CHAIN_ID = 11155111;
     uint256 public constant LOCAL_CHAIN_ID = 31337;
-    uint96 public MOCK_BASE_FEE = 0.25 ether;
+    uint96 public MOCK_BASE_FEE = 0.001 ether;
     uint96 public MOCK_GAS_PRICE_LINK = 1e9;
     int256 public MOCK_WEI_PER_UINT_LINK = 4e15; // Изменён тип
 
@@ -112,9 +113,10 @@ contract HelperConfig is Script, CodeConstant {
             callbackGasLimit: 500000, // 500,000 gas
             vrfCoordinator: address(vrfCoordinatorV2_5Mock),
             link: address(linkToken),
-            account: FOUNDRY_DEFAULT_SENDER
+            account: 0x1804c8AB1F12E6bbf3894d4083f33e07309d1f38 
         });
- 
+         vm.deal(localNetworkConfig.account, 100 ether);
+
         return localNetworkConfig;
     }
 }
