@@ -29,6 +29,7 @@ contract HelperConfig is Script, CodeConstant {
         uint256 subscriptionId;
         address link;
         address vrfCoordinatorV2_5; // Добавлено поле
+        address account;
     }
 
 
@@ -67,7 +68,8 @@ contract HelperConfig is Script, CodeConstant {
                 callbackGasLimit: 50000,
                 vrfCoordinatorV2_5: 0x9DdfaCa8183c41ad55329BdeeD9F6A8d53168B1B, // Добавлено поле
                 subscriptionId: 0,
-                link: 0xDB8cFf278adCCF9E9b5da745B44E754fC4EE3C76
+                link: 0xDB8cFf278adCCF9E9b5da745B44E754fC4EE3C76,
+                account: 0xfC2E8F8E71D1BF7878b7224720E133f02dA90039
             });
     }
 
@@ -95,7 +97,8 @@ contract HelperConfig is Script, CodeConstant {
             callbackGasLimit: 50000,
             vrfCoordinatorV2_5: address(vrfCoordinatorV2_5Mock), // Добавлено поле
             subscriptionId: 0,
-            link: address(linkToken)
+            link: address(linkToken),
+            account: 0x1804c8AB1F12E6bbf3894d4083f33e07309d1f38
         });
                 vm.deal(localNetworkConfig.vrfCoordinatorV2_5, 100 ether);
 

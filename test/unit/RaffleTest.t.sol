@@ -4,15 +4,13 @@ pragma solidity 0.8.19;
 import {Test} from "forge-std/Test.sol";
 import {DeployRaffle} from "script/DeployRaffle.s.sol";
 import {Raffle} from "src/Raffle.sol";
-import {HelperConfig} from "script/HelperConfig.s.sol";
+import {HelperConfig, CodeConstant} from "script/HelperConfig.s.sol";
 import {LinkToken} from "test/mocks/LinkToken.sol";
 import {Vm} from "forge-std/Vm.sol";
 import {VRFCoordinatorV2_5Mock} from "lib/chainlink-brownie-contracts/contracts/src/v0.8/vrf/mocks/VRFCoordinatorV2_5Mock.sol";
 import {console2} from "forge-std/console2.sol";
-
-
-
-contract RaffleTest is Test {
+ 
+contract RaffleTest is Test, CodeConstant {
     Raffle public raffle;
     HelperConfig public helperConfig;
 
@@ -164,11 +162,25 @@ contract RaffleTest is Test {
     }
 
 
-
+    modifier skipFork(){
+        if(block.chainid != LOCAL_CHAIN_ID){
+            return;
+        }
+        _;
+    }
+    function testFulfillrandomWordsCanBeCalledAfterPerformUpkeep(
+    uint256 randomRequestId
+) public raffleEntered skipFork {
+    vm.expectRevert(VRFCoordinatorV2_5Mock.InvalidRequest.selector);
+    VRFCoordinatorV2_5Mock(vrfCoordinator).fulfillRandomWords(
+        randomRequestId,
+        address(raffle)
+    );
+}
 
     function testFulfillrandomWordsPicsAWinnerResetsAndSendsMoney()
         public
-        raffleEntered
+        raffleEntered skipFork
     {
         uint256 additionalEntrants = 3;
         uint256 startingIndex = 1;
@@ -192,32 +204,25 @@ contract RaffleTest is Test {
         Vm.Log[] memory entries = vm.getRecordedLogs();
         bytes32 requestId = entries[1].topics[1];
 
-//    assertEq(
-//             uint256(entranceFee * (additionalEntrants + 1)),
-//             uint256(requestId)
-//         );
+        //    assertEq(
+        //             uint256(entranceFee * (additionalEntrants + 1)),
+        //             uint256(requestId)
+        //         );
 
         VRFCoordinatorV2_5Mock(vrfCoordinator).fulfillRandomWords(
             uint256(requestId),
             address(raffle)
         );
-      address recentWinner = raffle.getRecentWinner();
+        address recentWinner = raffle.getRecentWinner();
         Raffle.RaffleState raffleState = raffle.getRaffleState();
         uint256 winnerBalance = recentWinner.balance;
         uint256 endingTimeStamp = raffle.getLastTimeStamp();
         uint256 prize = entranceFee * (additionalEntrants + 1);
 
-   
-  console2.log("winnerBalance: ", winnerBalance);
-    console2.log("winnerStartingBalance: ", winnerStartingBalance);
-    console2.log("prize: ", prize);
-    console2.log("entranceFee: ", entranceFee);
-    console2.log("endingTimeStamp: ", endingTimeStamp);
-    console2.log("startingTimeStamp: ", startingTimeStamp);
+        console2.log("winnerBalance: ", winnerBalance);
 
         assert(recentWinner == expectedWinner);
         assert(uint256(raffleState) == 0);
         assert(winnerBalance == winnerStartingBalance + prize);
     }
-
 }
